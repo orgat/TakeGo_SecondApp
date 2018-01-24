@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Take&amp;Go_SecondApp</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="take_and_go"><![CDATA[Take & Go]]></string>
+    <string name="about">About us:</string>
+</resources>
