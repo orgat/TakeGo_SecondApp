@@ -19,6 +19,8 @@ public interface DB_Manager {
     long addBranch(ContentValues newBranch);
     long addReservation(ContentValues newReservation);
     long updateCar(ContentValues newCar);
+    long removeReservation(long id);
+    void updateReservation(long id, ContentValues newRes);
 
 
     Branch findBranchById(long branchId);
@@ -35,7 +37,8 @@ public interface DB_Manager {
     List<Car> availableCarsForBranch(long branchId);
     List<Branch> branchesWithAvailableModel(long carModelId);
     List<Reservation> openReservations();
-    boolean closeReservation(long reservationId, double mileage);
+    List<Reservation> userOpenReservations(long userId);
+    boolean closeReservation(long reservationId, double mileage, boolean refueled, double liters, String dateEnd);
 
 
 

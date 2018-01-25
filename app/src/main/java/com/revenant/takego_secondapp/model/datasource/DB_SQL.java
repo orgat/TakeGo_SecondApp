@@ -321,21 +321,50 @@ public class DB_SQL implements DB_Manager {
         }
 
     @Override
-    public boolean closeReservation(long reservationId, double mileage) {
+    public boolean closeReservation(long reservationId, double mileage, boolean refueled, double liters, String dateEnd) {
         Reservation reservationToClose = findReservationById(reservationId);
         if(reservationToClose!=null){
             reservationToClose.setPostKMCount(reservationToClose.getPreKMCount()+mileage);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                Date dateWithoutTime = sdf.parse(sdf.format(new Date()));
-                reservationToClose.setRentEnd(dateWithoutTime.toString());
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+            reservationToClose.setRentEnd(dateEnd);
+            reservationToClose.setWasRefueled(refueled);
+            reservationToClose.setLitersRefueled(refueled? liters : 0);
             reservationToClose.setOpen(false);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Reservation> userOpenReservations(long userId) {
+        List<Reservation> allRes = allReservations();
+        for(int i=0; i<allRes.size(); i++){
+            if(allRes.get(i).getCustomerNumber()!=userId || !allRes.get(i).isOpen()){
+               allRes.remove(i);
+            }
+        }
+        return allRes;
+    }
+
+    @Override
+    public long removeReservation(long resId) {
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put(Constants.ReservationConst.RESERVATION_NUMBER,resId);
+            String result = PHPTools.POST(WEB_URL + "removeReservation.php", cv);
+            long id = Long.parseLong(result.replace(" ", ""));
+            return id;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    @Override
+    public void updateReservation(long id, ContentValues newRes) {
+        removeReservation(id);
+        addReservation(newRes);
+
+
     }
 }
 

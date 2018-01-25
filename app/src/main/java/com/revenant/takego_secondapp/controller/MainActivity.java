@@ -3,6 +3,7 @@ package com.revenant.takego_secondapp.controller;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.revenant.takego_secondapp.R;
 import com.revenant.takego_secondapp.model.backend.Constants;
+import com.revenant.takego_secondapp.model.backend.DBManagerFactory;
 
 public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout myDrawerLayout;
@@ -64,7 +66,23 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
             fragment.setArguments(getIntent().getExtras());
             fragmentTransaction.replace(R.id.main_container,fragment);
             fragmentTransaction.commit();
+        } else if(id==R.id.nav_availableCars){
+            fragmentTransaction= getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.main_container,new AvailableCarsFragment());
+            fragmentTransaction.commit();
+        } else if(id==R.id.nav_rentedCars){
+            fragmentTransaction= getFragmentManager().beginTransaction();
+            Fragment fragment = new UserReservationsFragment();
+            fragment.setArguments(getIntent().getExtras());
+            fragmentTransaction.replace(R.id.main_container,fragment);
+            fragmentTransaction.commit();
+        } else if(id==R.id.nav_exit){
+
+
+            System.exit(0);
         }
+
+
             myDrawerLayout.closeDrawers();
         return false;
     }

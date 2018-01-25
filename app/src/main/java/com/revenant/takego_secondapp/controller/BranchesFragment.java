@@ -94,14 +94,8 @@ public class BranchesFragment extends Fragment {
                 cv.put(Constants.ReservationConst.CAR_NUMBER,car.getCarId());
                 cv.put(Constants.ReservationConst.PRE_KM_COUNT,car.getMileage());
                 cv.put(Constants.ReservationConst.CUSTOMER_NUMBER,userId);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                Date dateWithoutTime = null;
-                try {
-                    dateWithoutTime = sdf.parse(sdf.format(new Date()));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                cv.put(Constants.ReservationConst.RENT_BEGINNING,dateWithoutTime.toString());
+
+                cv.put(Constants.ReservationConst.RENT_BEGINNING,new Date().toString());
                 new AsyncTask<Void,Void,Long>(){
                     @Override
                     protected void onPostExecute(Long aLong) {
