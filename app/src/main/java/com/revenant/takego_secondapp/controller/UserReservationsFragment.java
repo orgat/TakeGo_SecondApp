@@ -5,10 +5,12 @@ import android.content.ContentValues;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -21,6 +23,9 @@ import com.revenant.takego_secondapp.model.backend.DBManagerFactory;
 import com.revenant.takego_secondapp.model.entities.Reservation;
 import com.revenant.takego_secondapp.util.UserReservationsAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,9 +35,8 @@ public class UserReservationsFragment extends Fragment {
     private ListView userReservations;
     private EditText mileage;
     private EditText liters;
-    private EditText date;
+
     private Button closeReservation;
-    private long userID;
     private Reservation reservationToClose;
 
     public UserReservationsFragment() {
@@ -54,9 +58,8 @@ public class UserReservationsFragment extends Fragment {
         userReservations = view.findViewById(R.id.userOpenReservationsId);
         mileage= view.findViewById(R.id.mileageEditText);
         liters= view.findViewById(R.id.litersEditTex);
-        date= view.findViewById(R.id.dateEditText);
         closeReservation = view.findViewById(R.id.closeResButtonId);
-         userID=Long.valueOf(getArguments().getString(Constants.CustomerConst.ID));
+        final long userID=Long.valueOf(getArguments().getString(Constants.CustomerConst.ID));
 
         new AsyncTask<Void,Void,ListAdapter>(){
             @Override
@@ -71,6 +74,8 @@ public class UserReservationsFragment extends Fragment {
                 return new UserReservationsAdapter(getActivity(),reservations);
             }
         }.execute();
+
+
 
         userReservations.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -90,15 +95,17 @@ public class UserReservationsFragment extends Fragment {
     }
 
     private void closeReservation() {
-        if (liters.getText().toString().isEmpty() || date.getText().toString().isEmpty() || mileage.getText().toString().isEmpty()) {
+        if (liters.getText().toString().isEmpty() || mileage.getText().toString().isEmpty()) {
             Toast.makeText(getActivity(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+        } else if(reservationToClose==null){
+            Toast.makeText(getActivity(), "Please select a reservation", Toast.LENGTH_SHORT).show();
         } else {
             double litersInput = Double.valueOf(liters.getText().toString());
             double mileageInput= Double.valueOf(mileage.getText().toString());
-            String dateInput = date.getText().toString();
             reservationToClose.setLitersRefueled(litersInput);
             reservationToClose.setWasRefueled(litersInput>0? true: false);
-            reservationToClose.setRentEnd(dateInput);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            reservationToClose.setRentEnd(sdf.format(new Date()));
             reservationToClose.setPostKMCount(reservationToClose.getPreKMCount()+mileageInput);
             double price = (10*mileageInput)- (litersInput*6);
             reservationToClose.setPrice(price);

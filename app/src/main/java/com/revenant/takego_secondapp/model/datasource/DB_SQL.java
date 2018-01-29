@@ -2,6 +2,7 @@ package com.revenant.takego_secondapp.model.datasource;
 
 import android.content.ContentValues;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -246,8 +247,8 @@ public class DB_SQL implements DB_Manager {
                 reservation.setReservationNumber(jsonObject.getLong(Constants.ReservationConst.RESERVATION_NUMBER));
                 reservation.setCustomerNumber(jsonObject.getLong(Constants.ReservationConst.CUSTOMER_NUMBER));
                 reservation.setCarNumber(jsonObject.getLong(Constants.ReservationConst.CAR_NUMBER));
-                reservation.setOpen(jsonObject.getBoolean(Constants.ReservationConst.IS_OPEN));
-                reservation.setWasRefueled(jsonObject.getBoolean(Constants.ReservationConst.WAS_REFUELED));
+                reservation.setOpen(Boolean.valueOf(jsonObject.getString(Constants.ReservationConst.IS_OPEN)));
+                reservation.setWasRefueled(Boolean.valueOf(jsonObject.getString(Constants.ReservationConst.WAS_REFUELED)));
                 reservation.setPreKMCount(jsonObject.getDouble(Constants.ReservationConst.PRE_KM_COUNT));
                 reservation.setPostKMCount(jsonObject.getDouble(Constants.ReservationConst.POST_KM_COUNT));
                 reservation.setLitersRefueled(jsonObject.getDouble(Constants.ReservationConst.LITERS_REFUELED));
@@ -337,12 +338,13 @@ public class DB_SQL implements DB_Manager {
     @Override
     public List<Reservation> userOpenReservations(long userId) {
         List<Reservation> allRes = allReservations();
+        List<Reservation> openRes = new ArrayList<>();
         for(int i=0; i<allRes.size(); i++){
-            if(allRes.get(i).getCustomerNumber()!=userId || !allRes.get(i).isOpen()){
-               allRes.remove(i);
+            if(allRes.get(i).getCustomerNumber()==userId && allRes.get(i).isOpen())
+                openRes.add(allRes.get(i));
             }
-        }
-        return allRes;
+
+        return openRes;
     }
 
     @Override

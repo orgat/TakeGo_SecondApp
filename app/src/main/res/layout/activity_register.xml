@@ -124,7 +124,7 @@
 
 
         <EditText
-            android:id="@+id/phoneId"
+            android:id="@+id/telephoneId"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

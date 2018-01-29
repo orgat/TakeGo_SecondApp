@@ -40,12 +40,12 @@
         app:layout_constraintTop_toBottomOf="@+id/aboutUs" />
 
     <TextView
-        android:id="@+id/aboutTelephone"
+        android:id="@+id/telephoneId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="48dp"
-        android:text="Telephone: 02-88888"
+        android:text="Telephone:"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="italic"
@@ -66,8 +66,22 @@
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/aboutTelephone"
-        app:layout_constraintTop_toBottomOf="@+id/aboutTelephone" />
+        app:layout_constraintStart_toStartOf="@+id/telephoneId"
+        app:layout_constraintTop_toBottomOf="@+id/telephoneId" />
+
+    <TextView
+        android:id="@+id/phoneId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/phone"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="italic"
+        app:layout_constraintBaseline_toBaselineOf="@+id/telephoneId"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintStart_toEndOf="@+id/telephoneId" />
 
 
 </android.support.constraint.ConstraintLayout>

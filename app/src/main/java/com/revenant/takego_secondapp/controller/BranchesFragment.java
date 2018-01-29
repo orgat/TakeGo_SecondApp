@@ -2,16 +2,20 @@ package com.revenant.takego_secondapp.controller;
 
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,7 +44,13 @@ public class BranchesFragment extends Fragment {
     private ListView branches;
     private ListView availableCars;
     private TextView branchDetails;
-    private ListAdapter branchesAdapter;
+    private ArrayAdapter branchesAdapter;
+    private ArrayAdapter carsAdapter;
+    private List<Car> carList=new ArrayList<>();
+    private List<Branch> branchList=new ArrayList<>();
+    private Branch selectedBranch;
+    private EditText textFiler;
+
     private Long userId;
 
     public BranchesFragment() {
@@ -53,6 +63,22 @@ public class BranchesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_branches, container, false);
         setUpUI(view);
+        textFiler.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                branchesAdapter.getFilter().filter(charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         return view;
     }
 
@@ -60,6 +86,7 @@ public class BranchesFragment extends Fragment {
         branches = view.findViewById(R.id.branchesListViewId);
         availableCars = view.findViewById(R.id.availableCarsListViewId);
         branchDetails = view.findViewById(R.id.branchDetailsId);
+        textFiler = view.findViewById(R.id.cityFilterId);
         Bundle extras= this.getArguments();
 
         userId = Long.valueOf(extras.getString(Constants.CustomerConst.ID));
@@ -67,35 +94,25 @@ public class BranchesFragment extends Fragment {
         branches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final Branch branch = (Branch) adapterView.getItemAtPosition(i);
-                branchDetails.setText(branch.toString());
-                new AsyncTask<Void, Void, ListAdapter>() {
-                    @Override
-                    protected void onPostExecute(ListAdapter listAdapter) {
-                        super.onPostExecute(listAdapter);
-                        availableCars.setAdapter(listAdapter);
-                    }
-
-                    @Override
-                    protected ListAdapter doInBackground(Void... voids) {
-                        List<Car> availableCarsList = DBManagerFactory.getDB_SQL().availableCarsForBranch(branch.getBranchNumber());
-                        return new CarsPerBranchListViewAdapter(getActivity(), availableCarsList);
-                    }
-                }.execute();
+                selectedBranch = (Branch) adapterView.getItemAtPosition(i);
+                branchDetails.setText(selectedBranch.toString());
+                updateAvailableCarsList(selectedBranch);
             }
+
+
         });
 
         availableCars.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Car car = (Car) adapterView.getItemAtPosition(i);
+                 Car car = (Car) adapterView.getItemAtPosition(i);
                 final ContentValues cv = new ContentValues();
                 cv.put(Constants.ReservationConst.IS_OPEN,true);
                 cv.put(Constants.ReservationConst.CAR_NUMBER,car.getCarId());
                 cv.put(Constants.ReservationConst.PRE_KM_COUNT,car.getMileage());
                 cv.put(Constants.ReservationConst.CUSTOMER_NUMBER,userId);
-
-                cv.put(Constants.ReservationConst.RENT_BEGINNING,new Date().toString());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                cv.put(Constants.ReservationConst.RENT_BEGINNING,sdf.format(new Date()));
                 new AsyncTask<Void,Void,Long>(){
                     @Override
                     protected void onPostExecute(Long aLong) {
@@ -105,13 +122,19 @@ public class BranchesFragment extends Fragment {
 
                     @Override
                     protected Long doInBackground(Void... voids) {
-                        return DBManagerFactory.getDB_SQL().addReservation(cv);
+                        long result= DBManagerFactory.getDB_SQL().addReservation(cv);
+                        updateAvailableCarsList(selectedBranch);
+                        return result;
                     }
                 }.execute();
             }
         });
 
         //Setting up the adapters
+        updateBranchesList();
+    }
+
+    private void updateBranchesList() {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected void onPostExecute(Void aVoid) {
@@ -122,10 +145,26 @@ public class BranchesFragment extends Fragment {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                List<Branch> allBranches = DBManagerFactory.getDB_SQL().allBranches();
-                branchesAdapter = new BranchesListViewAdapter(getActivity(), allBranches);
+                branchList = DBManagerFactory.getDB_SQL().allBranches();
+                branchesAdapter = new BranchesListViewAdapter(getActivity(), branchList);
 
                 return null;
+            }
+        }.execute();
+    }
+    private void updateAvailableCarsList(final Branch branch) {
+        new AsyncTask<Void, Void, ListAdapter>() {
+            @Override
+            protected void onPostExecute(ListAdapter listAdapter) {
+                super.onPostExecute(listAdapter);
+                availableCars.setAdapter(carsAdapter);
+            }
+
+            @Override
+            protected ListAdapter doInBackground(Void... voids) {
+                carList = DBManagerFactory.getDB_SQL().availableCarsForBranch(branch.getBranchNumber());
+                carsAdapter= new CarsPerBranchListViewAdapter(getActivity(), carList);
+                return carsAdapter;
             }
         }.execute();
     }

@@ -7,6 +7,7 @@ import com.revenant.takego_secondapp.model.entities.*;
  */
 public class Constants {
     public static final String SHOW_ALL= "show all";
+    public static final String AVAILABLE_CARS_CHANGED = "availableCarsChanged";
 
 
     public static class BranchConst {

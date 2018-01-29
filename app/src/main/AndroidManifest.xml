@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.revenant.takego_secondapp">
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -10,25 +12,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".controller.MainActivity"
+        <activity
+            android:name=".controller.MainActivity"
             android:label="TakeAndGo"
-            android:screenOrientation="portrait"
-            ></activity>
-
-        <activity android:name=".controller.LogInActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".controller.LogInActivity"
             android:label="Log In"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".controller.RegisterActivity"
+        <activity
+            android:name=".controller.RegisterActivity"
             android:label="Register"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+
+        <service
+            android:name=".controller.services.AvailableCarsService"
+            android:enabled="true"
+            android:exported="true"></service>
+
     </application>
 
 </manifest>

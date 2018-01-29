@@ -23,8 +23,12 @@ public class LogInActivity extends Activity {
     private Button logIn;
     private EditText id;
     private EditText password;
+    private String passwordInput;
+    private String idInput;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private final String LAST_USERNAME ="lastUsername";
+    private final String LAST_PASSWORD="lastPassword";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +37,7 @@ public class LogInActivity extends Activity {
         findViews();
         sharedPreferences = getSharedPreferences("MYPREFS", MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        editor.clear();
-        editor.commit();
+
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,15 +50,15 @@ public class LogInActivity extends Activity {
         logIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String idInput = id.getText().toString().replace(" ", "");
-                final String passwordInput = password.getText().toString().replace(" ", "");
+                idInput = id.getText().toString().replace(" ", "");
+               passwordInput = password.getText().toString().replace(" ", "");
 
                 if (idInput.isEmpty() || passwordInput.isEmpty()) { //User did not enter username or password
                     Toast.makeText(getBaseContext(), "Please enter ID and password and try again.", Toast.LENGTH_SHORT).show();
                 } else {   //User entered both ID and Password
                    String result = sharedPreferences.getString(idInput,"0");
                    if(passwordInput.equals(result) && !passwordInput.equals("0")){ //Username and password are valid. go to MainActivity.
-                       goToMainActivity(idInput);
+                       goToMainActivity();
                    } else{
                       new AsyncTask<Void,Void,Customer>(){
                           @Override
@@ -65,7 +68,7 @@ public class LogInActivity extends Activity {
                                   if(customer.getPassword().equals(passwordInput)){ //Correct password
                                       editor.putString(idInput,passwordInput);
                                       editor.commit();
-                                      goToMainActivity(idInput);
+                                      goToMainActivity();
                                   } else{ //Incorrect password
                                       Toast.makeText(getBaseContext(), "Wrong username or password.", Toast.LENGTH_SHORT).show();
                                   }
@@ -92,7 +95,10 @@ public class LogInActivity extends Activity {
         });
     }
 
-    private void goToMainActivity(String idInput) {
+    private void goToMainActivity() {
+        editor.putString(LAST_USERNAME, idInput);
+        editor.putString(LAST_PASSWORD,passwordInput);
+        editor.commit();
         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
         intent.putExtra(Constants.CustomerConst.ID,idInput);
         startActivity(intent);
@@ -105,5 +111,14 @@ public class LogInActivity extends Activity {
         password = findViewById(R.id.passwordId);
 
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        String lastUsername= sharedPreferences.getString(LAST_USERNAME, "");
+        String lastPassword= sharedPreferences.getString(LAST_PASSWORD, "");
+        id.setText(lastUsername);
+        password.setText(lastPassword);
     }
 }

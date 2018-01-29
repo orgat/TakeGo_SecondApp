@@ -2,15 +2,12 @@ package com.revenant.takego_secondapp.controller;
 
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.revenant.takego_secondapp.R;
@@ -113,7 +110,7 @@ public class RegisterActivity extends Activity {
         id = findViewById(R.id.customerId);
         name = findViewById(R.id.nameId);
         lastName = findViewById(R.id.lastNameId);
-        phone = findViewById(R.id.phoneId);
+        phone = findViewById(R.id.telephoneId);
         email = findViewById(R.id.emailId);
         creditCard = findViewById(R.id.creditCardId);
         addCustomer = findViewById(R.id.addCustomerButtonId);

@@ -1,9 +1,14 @@
 package com.revenant.takego_secondapp.controller;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +17,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.revenant.takego_secondapp.R;
+import com.revenant.takego_secondapp.model.backend.Constants;
 import com.revenant.takego_secondapp.model.backend.DBManagerFactory;
 import com.revenant.takego_secondapp.model.entities.Branch;
 import com.revenant.takego_secondapp.model.entities.Car;
@@ -29,6 +36,7 @@ public class AvailableCarsFragment extends Fragment {
     private TextView fullCarDetails;
     private TextView hostingBranchDetails;
 
+
     public AvailableCarsFragment() {
         // Required empty public constructor
     }
@@ -37,6 +45,8 @@ public class AvailableCarsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
 
         View view = inflater.inflate(R.layout.fragment_available_cars, container, false);
         setUpUI(view);
@@ -50,19 +60,7 @@ public class AvailableCarsFragment extends Fragment {
         availableCarsListView = view.findViewById(R.id.availableCarsId);
         fullCarDetails = view.findViewById(R.id.availableCarDetailsId);
         hostingBranchDetails = view.findViewById(R.id.hostingBranchDetailsId);
-        new AsyncTask<Void,Void,ListAdapter>(){
-            @Override
-            protected void onPostExecute(ListAdapter listAdapter) {
-                super.onPostExecute(listAdapter);
-                availableCarsListView.setAdapter(listAdapter);
-            }
-
-            @Override
-            protected ListAdapter doInBackground(Void... voids) {
-                List<Car> cars= DBManagerFactory.getDB_SQL().allAvailableCars();
-                return new AvailableCarsAdapter(getActivity(),cars);
-            }
-        }.execute();
+        updateAvailableCarsList();
 
         availableCarsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,6 +84,22 @@ public class AvailableCarsFragment extends Fragment {
             }
         });
 
+    }
+
+    public void updateAvailableCarsList() {
+        new AsyncTask<Void,Void,ListAdapter>(){
+            @Override
+            protected void onPostExecute(ListAdapter listAdapter) {
+                super.onPostExecute(listAdapter);
+                availableCarsListView.setAdapter(listAdapter);
+            }
+
+            @Override
+            protected ListAdapter doInBackground(Void... voids) {
+                List<Car> cars= DBManagerFactory.getDB_SQL().allAvailableCars();
+                return new AvailableCarsAdapter(getActivity(),cars);
+            }
+        }.execute();
     }
 
 }
