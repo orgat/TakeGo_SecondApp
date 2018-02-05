@@ -9,4 +9,5 @@
     <string name="about">About us:</string>
     <string name="close_reservation">Close Reservation</string>
     <string name="phone">0584712828</string>
+    <string name="take_and_go_second"><![CDATA[Take & Go Second]]></string>
 </resources>
